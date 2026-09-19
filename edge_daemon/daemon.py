@@ -36,7 +36,8 @@ KS_P_VALUE_THRESHOLD: float = float(os.getenv("KS_P_THRESHOLD", "0.05"))
 WINDOW_SIZE: int = int(os.getenv("WINDOW_SIZE", "200"))       # reduced for demo
 EVAL_EVERY: int = int(os.getenv("EVAL_EVERY", "50"))          # evaluate every N inferences
 API_GATEWAY_URL: str = os.getenv(
-    "API_GATEWAY_URL", "http://localhost:8000/drift"
+    "API_GATEWAY_URL",
+    "https://lofjx1lqw8.execute-api.us-east-1.amazonaws.com/prod/v1/telemetry/drift-event",
 )
 NODE_ID: str = os.getenv("EDGE_NODE_ID", f"edge-{uuid.uuid4().hex[:8]}")
 

@@ -1,0 +1,536 @@
+{
+  "/ZeroEgressDriftStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:stack-tags",
+      "data": [
+        {
+          "key": "Environment",
+          "value": "hackathon"
+        },
+        {
+          "key": "Project",
+          "value": "ZeroEgressDriftDetection"
+        }
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/ZeroEgressDriftStack/ApiEndpointUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiEndpointUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/PayloadBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PayloadBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/AlertTopicArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlertTopicArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/StateMachineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftPayloadBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftPayloadBucket26F50529"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/ZeroEgressDriftStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftEventBus/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftEventBus06E36C69"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftAlertTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftAlertTopic12410FBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/IngestLambdaLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestLambdaLogsAC3B7D32"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/IngestLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestLambda9890CC8D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApi5817DD14"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApiEndpointB83A61A8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftOrchestrator/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftOrchestrator28797697"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftCriticalRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftCriticalRule27D7DACB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftWarningRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftWarningRuleA917A3CF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftDashboard/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftDashboardFAB48CB8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/CDKMetadata/Condition": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadataAvailable"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftPayloadBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftPayloadBucketPolicy18F3FD9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftPayloadBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftPayloadBucketAutoDeleteObjectsCustomResourceBC184111"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftAlertTopic/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftAlertTopicPolicyCBFF8D7C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/IngestLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestLambdaServiceRole18CD342B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApiDeployment7B59A92895ce390a017d30a929896b3caec93e3b"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApiDeploymentStageprod7549F211"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftOrchestrator/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftOrchestratorRoleD6FCD6C8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftOrchestrator/EventsRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftOrchestratorEventsRole5DB8F217"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/IngestLambda/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestLambdaServiceRoleDefaultPolicyA78EFF9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/Default/v1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApiv1C44F2D31"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftOrchestrator/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftOrchestratorRoleDefaultPolicyE9F52213"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftOrchestrator/EventsRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftOrchestratorEventsRoleDefaultPolicy98E11200"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApiv1telemetry24FF6008"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/drift-event/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApiv1telemetrydriftevent8A558159"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/drift-event/POST/ApiPermission.ZeroEgressDriftStackDriftIngestApiB07BD7F5.POST..v1.telemetry.drift-event": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApiv1telemetrydrifteventPOSTApiPermissionZeroEgressDriftStackDriftIngestApiB07BD7F5POSTv1telemetrydrifteventF3418843"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/drift-event/POST/ApiPermission.Test.ZeroEgressDriftStackDriftIngestApiB07BD7F5.POST..v1.telemetry.drift-event": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApiv1telemetrydrifteventPOSTApiPermissionTestZeroEgressDriftStackDriftIngestApiB07BD7F5POSTv1telemetrydriftevent00FBBF42"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/drift-event/POST/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DriftIngestApiv1telemetrydrifteventPOST9B3F49BD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1398 @@
+{
+ "Description": "Zero-Egress Edge-to-Cloud Drift Detection — AWS Hackathon",
+ "Resources": {
+  "DriftPayloadBucket26F50529": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 30,
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     },
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftPayloadBucket/Resource"
+   }
+  },
+  "DriftPayloadBucketPolicy18F3FD9F": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "DriftPayloadBucket26F50529"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DriftPayloadBucket26F50529",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DriftPayloadBucket26F50529",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftPayloadBucket/Policy/Resource"
+   }
+  },
+  "DriftPayloadBucketAutoDeleteObjectsCustomResourceBC184111": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "DriftPayloadBucket26F50529"
+    }
+   },
+   "DependsOn": [
+    "DriftPayloadBucketPolicy18F3FD9F"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftPayloadBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "DriftPayloadBucket26F50529"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "DriftEventBus06E36C69": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "Name": "drift-edge-engine-bus",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftEventBus/Resource"
+   }
+  },
+  "DriftAlertTopic12410FBA": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "Model Drift Alerts",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ],
+    "TopicName": "drift-alerts"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftAlertTopic/Resource"
+   }
+  },
+  "DriftAlertTopicPolicyCBFF8D7C": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "DriftAlertTopic12410FBA"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "DriftAlertTopic12410FBA"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftAlertTopic/Policy/Resource"
+   }
+  },
+  "IngestLambdaLogsAC3B7D32": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/DriftIngestHandler",
+    "RetentionInDays": 7,
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/IngestLambdaLogs/Resource"
+   }
+  },
+  "IngestLambdaServiceRole18CD342B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/IngestLambda/ServiceRole/Resource"
+   }
+  },
+  "IngestLambdaServiceRoleDefaultPolicyA78EFF9F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DriftPayloadBucket26F50529",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DriftPayloadBucket26F50529",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "DriftEventBus06E36C69",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IngestLambdaServiceRoleDefaultPolicyA78EFF9F",
+    "Roles": [
+     {
+      "Ref": "IngestLambdaServiceRole18CD342B"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/IngestLambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "IngestLambda9890CC8D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "f16c353d26b0c5d23e9db5536b021b963343d0acdf4e6464b86e28063597ffd4.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "BUCKET_NAME": {
+       "Ref": "DriftPayloadBucket26F50529"
+      },
+      "EVENT_BUS_NAME": {
+       "Ref": "DriftEventBus06E36C69"
+      }
+     }
+    },
+    "FunctionName": "DriftIngestHandler",
+    "Handler": "ingest.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "IngestLambdaLogsAC3B7D32"
+     }
+    },
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "IngestLambdaServiceRole18CD342B",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ],
+    "Timeout": 15
+   },
+   "DependsOn": [
+    "IngestLambdaServiceRoleDefaultPolicyA78EFF9F",
+    "IngestLambdaServiceRole18CD342B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/IngestLambda/Resource",
+    "aws:asset:path": "asset.f16c353d26b0c5d23e9db5536b021b963343d0acdf4e6464b86e28063597ffd4",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "DriftIngestApi5817DD14": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "Receives compressed drift payloads from edge nodes",
+    "Name": "DriftIngestionAPI",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftIngestApi/Resource"
+   }
+  },
+  "DriftIngestApiDeployment7B59A92895ce390a017d30a929896b3caec93e3b": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Receives compressed drift payloads from edge nodes",
+    "RestApiId": {
+     "Ref": "DriftIngestApi5817DD14"
+    }
+   },
+   "DependsOn": [
+    "DriftIngestApiv1C44F2D31",
+    "DriftIngestApiv1telemetrydrifteventPOST9B3F49BD",
+    "DriftIngestApiv1telemetrydriftevent8A558159",
+    "DriftIngestApiv1telemetry24FF6008"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftIngestApi/Deployment/Resource",
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "DriftIngestApiDeploymentStageprod7549F211": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "DriftIngestApiDeployment7B59A92895ce390a017d30a929896b3caec93e3b"
+    },
+    "MethodSettings": [
+     {
+      "DataTraceEnabled": false,
+      "HttpMethod": "*",
+      "ResourcePath": "/*",
+      "ThrottlingBurstLimit": 50,
+      "ThrottlingRateLimit": 100
+     }
+    ],
+    "RestApiId": {
+     "Ref": "DriftIngestApi5817DD14"
+    },
+    "StageName": "prod",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftIngestApi/DeploymentStage.prod/Resource"
+   }
+  },
+  "DriftIngestApiv1C44F2D31": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "DriftIngestApi5817DD14",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "v1",
+    "RestApiId": {
+     "Ref": "DriftIngestApi5817DD14"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftIngestApi/Default/v1/Resource"
+   }
+  },
+  "DriftIngestApiv1telemetry24FF6008": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "DriftIngestApiv1C44F2D31"
+    },
+    "PathPart": "telemetry",
+    "RestApiId": {
+     "Ref": "DriftIngestApi5817DD14"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/Resource"
+   }
+  },
+  "DriftIngestApiv1telemetrydriftevent8A558159": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "DriftIngestApiv1telemetry24FF6008"
+    },
+    "PathPart": "drift-event",
+    "RestApiId": {
+     "Ref": "DriftIngestApi5817DD14"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/drift-event/Resource"
+   }
+  },
+  "DriftIngestApiv1telemetrydrifteventPOSTApiPermissionZeroEgressDriftStackDriftIngestApiB07BD7F5POSTv1telemetrydrifteventF3418843": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IngestLambda9890CC8D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DriftIngestApi5817DD14"
+       },
+       "/",
+       {
+        "Ref": "DriftIngestApiDeploymentStageprod7549F211"
+       },
+       "/POST/v1/telemetry/drift-event"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/drift-event/POST/ApiPermission.ZeroEgressDriftStackDriftIngestApiB07BD7F5.POST..v1.telemetry.drift-event"
+   }
+  },
+  "DriftIngestApiv1telemetrydrifteventPOSTApiPermissionTestZeroEgressDriftStackDriftIngestApiB07BD7F5POSTv1telemetrydriftevent00FBBF42": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IngestLambda9890CC8D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DriftIngestApi5817DD14"
+       },
+       "/test-invoke-stage/POST/v1/telemetry/drift-event"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/drift-event/POST/ApiPermission.Test.ZeroEgressDriftStackDriftIngestApiB07BD7F5.POST..v1.telemetry.drift-event"
+   }
+  },
+  "DriftIngestApiv1telemetrydrifteventPOST9B3F49BD": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "IngestLambda9890CC8D",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     },
+     {
+      "StatusCode": "400"
+     },
+     {
+      "StatusCode": "500"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "DriftIngestApiv1telemetrydriftevent8A558159"
+    },
+    "RestApiId": {
+     "Ref": "DriftIngestApi5817DD14"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftIngestApi/Default/v1/telemetry/drift-event/POST/Resource"
+   }
+  },
+  "DriftOrchestratorRoleD6FCD6C8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftOrchestrator/Role/Resource"
+   }
+  },
+  "DriftOrchestratorRoleDefaultPolicyE9F52213": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "DriftAlertTopic12410FBA"
+       }
+      },
+      {
+       "Action": [
+        "xray:GetSamplingRules",
+        "xray:GetSamplingTargets",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DriftOrchestratorRoleDefaultPolicyE9F52213",
+    "Roles": [
+     {
+      "Ref": "DriftOrchestratorRoleD6FCD6C8"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftOrchestrator/Role/DefaultPolicy/Resource"
+   }
+  },
+  "DriftOrchestrator28797697": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"TriggerSageMakerRetraining\",\"States\":{\"TriggerSageMakerRetraining\":{\"Type\":\"Pass\",\"Comment\":\"Mock: In production, trigger SageMaker Pipelines here\",\"Result\":{\"status\":\"Retraining Triggered\",\"pipeline\":\"drift-retrain-v1\"},\"ResultPath\":\"$.retraining\",\"Next\":\"NotifyDevOps\"},\"NotifyDevOps\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$.notification\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::sns:publish\",\"Parameters\":{\"TopicArn\":\"",
+       {
+        "Ref": "DriftAlertTopic12410FBA"
+       },
+       "\",\"Message.$\":\"States.Format('🚨 Model Drift Detected on Node {} — Retraining Pipeline Triggered', $.detail.node_id)\",\"Subject\":\"Model Drift Alert\"}}},\"TimeoutSeconds\":600}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "DriftOrchestratorRoleD6FCD6C8",
+      "Arn"
+     ]
+    },
+    "StateMachineName": "DriftRetrainingOrchestrator",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ],
+    "TracingConfiguration": {
+     "Enabled": true
+    }
+   },
+   "DependsOn": [
+    "DriftOrchestratorRoleDefaultPolicyE9F52213",
+    "DriftOrchestratorRoleD6FCD6C8"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftOrchestrator/Resource"
+   }
+  },
+  "DriftOrchestratorEventsRole5DB8F217": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftOrchestrator/EventsRole/Resource"
+   }
+  },
+  "DriftOrchestratorEventsRoleDefaultPolicy98E11200": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "DriftOrchestrator28797697"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DriftOrchestratorEventsRoleDefaultPolicy98E11200",
+    "Roles": [
+     {
+      "Ref": "DriftOrchestratorEventsRole5DB8F217"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftOrchestrator/EventsRole/DefaultPolicy/Resource"
+   }
+  },
+  "DriftCriticalRule27D7DACB": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Routes CRITICAL drift events to the retraining orchestrator",
+    "EventBusName": {
+     "Ref": "DriftEventBus06E36C69"
+    },
+    "EventPattern": {
+     "detail": {
+      "drift_severity": [
+       "CRITICAL"
+      ]
+     },
+     "detail-type": [
+      "ModelDriftDetected"
+     ],
+     "source": [
+      "drift.edge.engine"
+     ]
+    },
+    "State": "ENABLED",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ],
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "DriftOrchestrator28797697"
+      },
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "DriftOrchestratorEventsRole5DB8F217",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftCriticalRule/Resource"
+   }
+  },
+  "DriftWarningRuleA917A3CF": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Routes WARNING drift events directly to SNS",
+    "EventBusName": {
+     "Ref": "DriftEventBus06E36C69"
+    },
+    "EventPattern": {
+     "detail": {
+      "drift_severity": [
+       "WARNING"
+      ]
+     },
+     "detail-type": [
+      "ModelDriftDetected"
+     ],
+     "source": [
+      "drift.edge.engine"
+     ]
+    },
+    "State": "ENABLED",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ],
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "DriftAlertTopic12410FBA"
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftWarningRule/Resource"
+   }
+  },
+  "DriftDashboardFAB48CB8": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":0,\"properties\":{\"view\":\"singleValue\",\"title\":\"Lambda Invocations\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Ref": "IngestLambda9890CC8D"
+       },
+       "\",{\"stat\":\"Sum\"}]]}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":6,\"y\":0,\"properties\":{\"view\":\"singleValue\",\"title\":\"Lambda Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Ref": "IngestLambda9890CC8D"
+       },
+       "\",{\"stat\":\"Sum\"}]]}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Step Functions Executions\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/States\",\"ExecutionsStarted\",\"StateMachineArn\",\"",
+       {
+        "Ref": "DriftOrchestrator28797697"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/States\",\"ExecutionsSucceeded\",\"StateMachineArn\",\"",
+       {
+        "Ref": "DriftOrchestrator28797697"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/States\",\"ExecutionsFailed\",\"StateMachineArn\",\"",
+       {
+        "Ref": "DriftOrchestrator28797697"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "ZeroEgressDriftMonitor",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "hackathon"
+     },
+     {
+      "Key": "Project",
+      "Value": "ZeroEgressDriftDetection"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/DriftDashboard/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/5VRTW/bMAz9Lc1Z4bL6MGC3pFl7aVHD2W0YAllmbTWyZJhUs0DQfx9k5cMbdtnFfI8U3yPpe7j/soLVnTzSUjWHpdE1hB1LdRDySPtABYSNVwdk8fBmM/oRFr3+pe3i62Lelt5TAVOJID9de3ZbNMj4Wr+jYlrEnyKXSme0Ot1UM/8P7dywY8nYo51LbyRhFPiRshC+pbjxlKyuuPIGUyLFKMgShO9u0CrlMpi+tyFnNArjWoLw7Nqn0fkhlS84CiP7upEQHr1VrJ1N1Tkucew1kXY2Ci17CJU7j5LizfDiRcVeEiETrFMQctCtZDzKE4TnyatC4vWgJ40z3OJg3CmdJWVnbMeyndwyqJCcHxWmi13JWSjjF+TONSmVURTEOLydFyIIpSQS0194karT9qJ+5X917FnSgWBnqfS10dQJZZxvjpJVB2ErqaudHCfHK4lRPHhi1/9zxD9L5eg+dIPjtNJ0srSqtm3qefU8eI6iPHHn7KcCPhewunsnrZejt6x7hCrH3/ZXO94ZAwAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ZeroEgressDriftStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "DriftIngestApiEndpointB83A61A8": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "DriftIngestApi5817DD14"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "DriftIngestApiDeploymentStageprod7549F211"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ApiEndpointUrl": {
+   "Description": "Paste this into edge_daemon/daemon.py → API_GATEWAY_URL",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "DriftIngestApi5817DD14"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "DriftIngestApiDeploymentStageprod7549F211"
+      },
+      "/v1/telemetry/drift-event"
+     ]
+    ]
+   }
+  },
+  "PayloadBucketName": {
+   "Value": {
+    "Ref": "DriftPayloadBucket26F50529"
+   }
+  },
+  "AlertTopicArn": {
+   "Value": {
+    "Ref": "DriftAlertTopic12410FBA"
+   }
+  },
+  "StateMachineArn": {
+   "Value": {
+    "Ref": "DriftOrchestrator28797697"
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -142,7 +142,7 @@ class DriftStack(Stack):
             self,
             "NotifyDevOps",
             topic=alert_topic,
-            message=sfn.TaskInput.from_json_path_at("States.Format('🚨 Model Drift Detected on Node {} — Retraining Pipeline Triggered', $.node_id)"),
+            message=sfn.TaskInput.from_json_path_at("States.Format('🚨 Model Drift Detected on Node {} — Retraining Pipeline Triggered', $.detail.node_id)"),
             subject="Model Drift Alert",
             result_path="$.notification",
         )
